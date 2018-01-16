@@ -1,0 +1,10 @@
+{
+  "name": "opentrv-gateway",
+  "version": "1.0.0",
+  "description": "gateway that interfaces with the devices, the boiler controller and the web interface",
+  "main": "index.js",
+  "repository": "https://github.com/jack-evans/opentrv-gateway",
+  "author": "Jack Evans",
+  "license": "MIT",
+  "private": true
+}
