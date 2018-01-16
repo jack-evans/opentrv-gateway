@@ -6,5 +6,23 @@
   "repository": "https://github.com/jack-evans/opentrv-gateway",
   "author": "Jack Evans",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "lint": "standard --verbose | snazzy"
+  },
+  "standard": {
+    "env": [
+      "jest",
+      "node"
+    ]
+  }
 }
