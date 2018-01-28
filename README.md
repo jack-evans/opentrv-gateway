@@ -24,12 +24,12 @@ PUT /trv/{id}/temperature
 
 ### schedules
 
-POST /trv/{trvId}/schedule
+POST /trv/{id}/schedule
 
-GET /trv/{trvId}/schedule
+GET /trv/{id}/schedule
 
-GET /trv/{trvId}/schedule/{scheduleId}
+GET /trv/{id}/schedule/{scheduleId}
 
-PUT /trv/{trvId}/schedule/{scheduleId}
+PUT /trv/{id}/schedule/{scheduleId}
 
-DELETE /trv/{trvId}/schedule/{scheduleId}
+DELETE /trv/{id}/schedule/{scheduleId}
