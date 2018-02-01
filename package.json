@@ -13,8 +13,11 @@
     "standard": "^10.0.3"
   },
   "dependencies": {
+    "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "jsonfile": "^4.0.0",
+    "uuid": "^3.2.1"
   },
   "scripts": {
     "start": "node server.js",
