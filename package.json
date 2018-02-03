@@ -19,6 +19,25 @@
     "jsonfile": "^4.0.0",
     "uuid": "^3.2.1"
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "lib/**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": 80
+      }
+    },
+    "testMatch": [
+      "<rootDir>/test/**/*-test.js"
+    ]
+  },
   "scripts": {
     "start": "node server.js",
     "lint": "standard --verbose | snazzy"
