@@ -48,6 +48,10 @@ PUT /trv/{id}/temperature
 
 Updates the target temperature for a particular trv
 
+GET /trv/{id}/info
+
+returns a JSON object of time, current temperature, target temperature and activity
+
 
 ### schedules
 
