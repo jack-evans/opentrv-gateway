@@ -11,6 +11,7 @@
  * https://docs.oracle.com/javaee/7/api/javax/json/JsonObject.html
  * https://docs.oracle.com/javaee/7/api/javax/json/JsonString.html
  * https://docs.oracle.com/javaee/7/api/javax/json/JsonArray.html
+ * https://docs.oracle.com/javaee/7/api/javax/json/JsonObjectBuilder.html
  */
 
 import java.io.BufferedReader;
@@ -91,6 +92,42 @@ public class HttpExample {
             JsonObject object = resultArray.getJsonObject(0);
 
             System.out.println(object.getString("id"));
+        } else {
+            System.out.println("Got an unexpected response code from the server: " + responseCode);
+            System.out.println("Got the response message: " + responseMessage);
+        }
+    }
+    
+    public void postRequestWithJson() throws Exception {
+        // example trv payload
+        JsonObject trv = Json.createObjectBuilder()
+            .add("name", "example device")
+            .add("currentTemperature", 21)
+            .add("ambientTemperature", 16)
+            .build();
+
+        System.out.println(trv.toString());
+
+        URL url = new URL(GATEWAY_URL + "/trv");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setDoOutput(true);
+
+        OutputStreamWriter wr= new OutputStreamWriter(connection.getOutputStream());
+        wr.write(trv.toString());
+        wr.flush();
+        wr.close();
+
+        int responseCode = connection.getResponseCode();
+        String responseMessage = connection.getResponseMessage();
+
+        System.out.println("Request recieved the following response code: " + responseCode);
+    
+
+        if (responseCode == HttpURLConnection.HTTP_CREATED) {
+            System.out.println("success");
         } else {
             System.out.println("Got an unexpected response code from the server: " + responseCode);
             System.out.println("Got the response message: " + responseMessage);
