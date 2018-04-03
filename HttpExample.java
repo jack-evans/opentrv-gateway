@@ -68,7 +68,7 @@ public class HttpExample {
         }
     }
     
-    public void getRequestWithJson () throws Exception {
+    public void getRequestWithJson() throws Exception {
         URL url = new URL(GATEWAY_URL + "/trv");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -115,7 +115,7 @@ public class HttpExample {
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setDoOutput(true);
 
-        OutputStreamWriter wr= new OutputStreamWriter(connection.getOutputStream());
+        OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
         wr.write(trv.toString());
         wr.flush();
         wr.close();
@@ -125,7 +125,6 @@ public class HttpExample {
 
         System.out.println("Request recieved the following response code: " + responseCode);
     
-
         if (responseCode == HttpURLConnection.HTTP_CREATED) {
             System.out.println("success");
         } else {
