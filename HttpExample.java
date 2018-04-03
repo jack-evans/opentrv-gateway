@@ -46,7 +46,7 @@ public class HttpExample {
         int responseCode = connection.getResponseCode();
         String responseMessage = connection.getResponseMessage();
 
-        System.out.println("Request recieved the following response code: " + responseCode);
+        System.out.println("Request received the following response code: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -80,7 +80,7 @@ public class HttpExample {
         int responseCode = connection.getResponseCode();
         String responseMessage = connection.getResponseMessage();
 
-        System.out.println("Request recieved the following response code: " + responseCode);
+        System.out.println("Request received the following response code: " + responseCode);
 
         if (responseCode == HttpURLConnection.HTTP_OK) {
             JsonReader jsonReader = Json.createReader(new InputStreamReader(connection.getInputStream()));
@@ -123,7 +123,7 @@ public class HttpExample {
         int responseCode = connection.getResponseCode();
         String responseMessage = connection.getResponseMessage();
 
-        System.out.println("Request recieved the following response code: " + responseCode);
+        System.out.println("Request received the following response code: " + responseCode);
     
         if (responseCode == HttpURLConnection.HTTP_CREATED) {
             System.out.println("success");
