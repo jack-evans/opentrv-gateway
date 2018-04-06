@@ -1,5 +1,11 @@
 # opentrv-gateway
 
+## Getting Started
+
+Node and Npm are required for this project.
+
+First need to run `npm install` to install all of the required modules. Then run `npm start` to start the server.
+
 ## Background
 
 ## API
