@@ -14,59 +14,93 @@ basePath: /api/v1
 
 ### trv
 
-GET /trv
+#### GET /trv
 
 Return all of the trv's connected to the gateway
 
-Returns an array
 
-GET /trv/{id}
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | no            | N/A    |
+| body            | No            |   N/A  |
+| returns         | N/A           |  Array |
+
+#### GET /trv/{id}
 
 Return the details of a particular trv that is connected to the gateway
 
-Returns a JSON object
 
-PUT /trv/{id}
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | Yes, id       | String |
+| body            | No            |   N/A  |
+| returns         | N/A           | Object |
+
+#### PUT /trv/{id}
 
 Update the details of a trv that is connected to the gateway
 
-Returns a JSON object
 
-DELETE /trv/{id}
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | yes, id       | String |
+| body            | yes, fields of trv that wished to be changed | Object |
+| returns         | N/A           | Object |
+
+#### DELETE /trv/{id}
 
 Delete a trv that is connected to the gateway
 
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | yes, id       | String |
+| body            | No            |   N/A  |
+| returns         | N/A           |  N/A   |
+
 Returns nothing
 
-GET /trv/{id}/isActive
+#### GET /trv/{id}/isActive
 
 Return whether a particular trv is active or not
 
-Returns a boolean value
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | yes, id       | String |
+| body            | No            |   N/A  |
+| returns         | N/A           | Object |
 
-GET /trv/{id}/temperature
+#### GET /trv/{id}/temperature
 
 Returns the current temperature for a particular trv
 
-Returns a number
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | yes, id       | String |
+| body            | No            |   N/A  |
+| returns         | N/A           | Object |
 
-PUT /trv/{id}/temperature
+#### PUT /trv/{id}/temperature
 
 Updates the target temperature for a particular trv
 
-GET /trv/{id}/info
+| Specifics       | required      | type   |
+| --------------- |:-------------:| ------:|
+| params          | yes, id       | String |
+| body            | yes, with target temperature property | Object |
+| returns         | N/A           | N/A    |
+
+#### GET /trv/{id}/info
 
 returns a JSON object of time, current temperature, target temperature and activity
 
-
 ### schedules
 
-POST /trv/{id}/schedule
+#### POST /trv/{id}/schedule
 
-GET /trv/{id}/schedule
+#### GET /trv/{id}/schedule
 
-GET /trv/{id}/schedule/{scheduleId}
+#### GET /trv/{id}/schedule/{scheduleId}
 
-PUT /trv/{id}/schedule/{scheduleId}
+#### PUT /trv/{id}/schedule/{scheduleId}
 
-DELETE /trv/{id}/schedule/{scheduleId}
+#### DELETE /trv/{id}/schedule/{scheduleId}
