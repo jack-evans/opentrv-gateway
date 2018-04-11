@@ -19,8 +19,8 @@ router.get('/trv/:id/info', trvRequestHandler.getTrvInfoRequestHandler)
 // schedule request handlers
 router.post('/schedule', scheduleRequestHandler.createScheduleRequestHandler)
 router.get('/schedule', scheduleRequestHandler.getAllSchedulesRequestHandler)
-rotuer.get('/schedule/:id', scheduleRequestHandler.getScheduleByIdRequestHandler)
-router.put('/schedule/:id', scheduleRequestHandler.updateScheduleReequestHandler)
+router.get('/schedule/:id', scheduleRequestHandler.getScheduleByIdRequestHandler)
+router.put('/schedule/:id', scheduleRequestHandler.updateScheduleRequestHandler)
 router.delete('/schedule/:id', scheduleRequestHandler.deleteScheduleRequestHandler)
 
 router.get('/test', (req, res) => {

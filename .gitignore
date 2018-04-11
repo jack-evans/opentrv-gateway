@@ -2,6 +2,7 @@
 
 # storage
 /trvStorage
+/scheduleStorage
 
 # dependencies
 /node_modules
