@@ -95,12 +95,12 @@ returns a JSON object of time, current temperature, target temperature and activ
 
 ### schedules
 
-#### POST /trv/{id}/schedule
+#### POST /schedule
 
-#### GET /trv/{id}/schedule
+#### GET /schedule
 
-#### GET /trv/{id}/schedule/{scheduleId}
+#### GET /schedule/{scheduleId}
 
-#### PUT /trv/{id}/schedule/{scheduleId}
+#### PUT /schedule/{scheduleId}
 
-#### DELETE /trv/{id}/schedule/{scheduleId}
+#### DELETE /schedule/{scheduleId}
