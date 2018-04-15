@@ -19,6 +19,7 @@
     "express": "^4.16.2",
     "jsonfile": "^4.0.0",
     "jsonschema": "^1.2.4",
+    "moment": "^2.22.0",
     "node-cron": "^1.2.1",
     "request-promise": "^4.2.2",
     "uuid": "^3.2.1"
