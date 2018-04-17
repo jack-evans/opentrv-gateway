@@ -7,11 +7,12 @@ expect.extend(toBeType)
 describe('trvRequestHandler', () => {
   let trvRequestHandler
 
-  beforeEach(() => {
+  beforeAll(() => {
     trvRequestHandler = require('../../lib/trv/trvRequestHandler.js')
   })
 
-  afterEach(() => {
+  afterAll(() => {
+    jest.restoreAllMocks()
     delete require.cache[require.resolve('../../lib/trv/trvRequestHandler.js')]
   })
 
@@ -2667,15 +2668,14 @@ describe('trvRequestHandler', () => {
   })
 
   describe('internal functions', () => {
-    describe.skip('_createTrv', () => {
+    describe('_createTrv', () => {
       let trvStorage
       let createTrvSpy
-      // let validator
-      /* let trv = {
+      let trv = {
         name: 'test trv',
         currentTemperature: 23,
         ambientTemperature: 15
-      } */
+      }
 
       beforeEach(() => {
         trvStorage = {
@@ -2742,17 +2742,41 @@ describe('trvRequestHandler', () => {
 
       describe('when the trv object is valid', () => {
         describe('when the json validator succeeds', () => {
+          it('calls the createTrv method', () => {
+            createTrvSpy.mockReturnValue(Promise.resolve())
+            return trvRequestHandler.internal._createTrv(trvStorage, trv)
+              .then(() => {
+                expect(createTrvSpy).toHaveBeenCalledTimes(1)
+              })
+          })
 
+          describe('when the createTrv method succeeds', () => {
+            it('returns a resolved promise', () => {
+              createTrvSpy.mockReturnValue(Promise.resolve())
+              return trvRequestHandler.internal._createTrv(trvStorage, trv)
+            })
+          })
+
+          describe('when the createTrv method fails', () => {
+            it('returns a rejected promise', () => {
+              expect.assertions(1)
+              createTrvSpy.mockReturnValue(Promise.reject(new Error('Bang!')))
+              return trvRequestHandler.internal._createTrv(trvStorage, trv)
+                .catch(error => {
+                  expect(error.message).toEqual('Bang!')
+                })
+            })
+          })
         })
 
         describe('when the json validator fails', () => {
-          beforeEach(() => {
-
-          })
+          let badTrv = {
+            someContent: 'bad trv'
+          }
 
           it('does not call the createTrv method', () => {
             expect.assertions(1)
-            return trvRequestHandler.internal._createTrv(trvStorage, 'bad')
+            return trvRequestHandler.internal._createTrv(trvStorage, badTrv)
               .catch(() => {
                 expect(createTrvSpy).not.toHaveBeenCalled()
               })
@@ -2760,15 +2784,10 @@ describe('trvRequestHandler', () => {
 
           it('returns a rejected promise with the error in the body', () => {
             expect.assertions(1)
-            let expectedError = {
-              statusCode: 400,
-              message: 'The body provided was not an object. It was of the type string',
-              name: 'bad request'
-            }
 
-            return trvRequestHandler.internal._createTrv(trvStorage, 'bad')
+            return trvRequestHandler.internal._createTrv(trvStorage, badTrv)
               .catch(error => {
-                expect(error).toEqual(expectedError)
+                expect(error.statusCode).toEqual(400)
               })
           })
         })
@@ -2970,7 +2989,140 @@ describe('trvRequestHandler', () => {
     })
 
     describe('_updateTrv', () => {
+      let trvStorage
+      let updateTrvSpy
+      const oldTrv = {
+        'id': '1234',
+        'currentTemperature': 25,
+        'targetTemperature': 18,
+        'ambientTemperature': 18,
+        'name': 'new test',
+        'serialId': 'OTRV-D0L2OO49TZ',
+        'active': false,
+        'activeSchedules': [],
+        'metadata': {}
+      }
+      let trv = {
+        name: 'trv living room',
+        currentTemperature: 23,
+        ambientTemperature: 15
+      }
 
+      beforeEach(() => {
+        trvStorage = {
+          updateTrv: () => {}
+        }
+        updateTrvSpy = jest.spyOn(trvStorage, 'updateTrv')
+      })
+
+      afterEach(() => {
+        updateTrvSpy.mockReset()
+      })
+
+      afterAll(() => {
+        updateTrvSpy.mockRestore()
+      })
+
+      describe('when the trv is not defined', () => {
+        it('does not call the updateTrv method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, undefined)
+            .catch(() => {
+              expect(updateTrvSpy).not.toHaveBeenCalled()
+            })
+        })
+
+        it('returns a rejected promise with the error in the body', () => {
+          expect.assertions(1)
+          let expectedError = {
+            statusCode: 400,
+            message: 'The body provided was undefined',
+            name: 'bad request'
+          }
+
+          return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, undefined)
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the trv is not an object', () => {
+        it('does not call the updateTrv method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, 'bad')
+            .catch(() => {
+              expect(updateTrvSpy).not.toHaveBeenCalled()
+            })
+        })
+
+        it('returns a rejected promise with the error in the body', () => {
+          expect.assertions(1)
+          let expectedError = {
+            statusCode: 400,
+            message: 'The body provided was not an object. It was of the type string',
+            name: 'bad request'
+          }
+
+          return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, 'bad')
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the trv object is valid', () => {
+        describe('when the json validator succeeds', () => {
+          it('calls the updateTrv method', () => {
+            updateTrvSpy.mockReturnValue(Promise.resolve())
+            return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, trv)
+              .then(() => {
+                expect(updateTrvSpy).toHaveBeenCalledTimes(1)
+              })
+          })
+
+          describe('when the updateTrv method succeeds', () => {
+            it('returns a resolved promise', () => {
+              updateTrvSpy.mockReturnValue(Promise.resolve())
+              return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, trv)
+            })
+          })
+
+          describe('when the updateTrv method fails', () => {
+            it('returns a rejected promise', () => {
+              expect.assertions(1)
+              updateTrvSpy.mockReturnValue(Promise.reject(new Error('Bang!')))
+              return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, trv)
+                .catch(error => {
+                  expect(error.message).toEqual('Bang!')
+                })
+            })
+          })
+        })
+
+        describe('when the json validator fails', () => {
+          let badTrv = {
+            someContent: 'bad trv'
+          }
+
+          it('does not call the updateTrv method', () => {
+            expect.assertions(1)
+            return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, badTrv)
+              .catch(() => {
+                expect(updateTrvSpy).not.toHaveBeenCalled()
+              })
+          })
+
+          it('returns a rejected promise with the error in the body', () => {
+            expect.assertions(1)
+
+            return trvRequestHandler.internal._updateTrv(trvStorage, oldTrv, badTrv)
+              .catch(error => {
+                expect(error.statusCode).toEqual(400)
+              })
+          })
+        })
+      })
     })
 
     describe('_deleteTrv', () => {
