@@ -2667,6 +2667,437 @@ describe('trvRequestHandler', () => {
   })
 
   describe('internal functions', () => {
+    describe.skip('_createTrv', () => {
+      let trvStorage
+      let createTrvSpy
+      // let validator
+      /* let trv = {
+        name: 'test trv',
+        currentTemperature: 23,
+        ambientTemperature: 15
+      } */
 
+      beforeEach(() => {
+        trvStorage = {
+          createTrv: () => {}
+        }
+        createTrvSpy = jest.spyOn(trvStorage, 'createTrv')
+      })
+
+      afterEach(() => {
+        createTrvSpy.mockReset()
+      })
+
+      afterAll(() => {
+        createTrvSpy.mockRestore()
+      })
+
+      describe('when the trv is not defined', () => {
+        it('does not call the createTrv method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._createTrv(trvStorage, undefined)
+            .catch(() => {
+              expect(createTrvSpy).not.toHaveBeenCalled()
+            })
+        })
+
+        it('returns a rejected promise with the error in the body', () => {
+          expect.assertions(1)
+          let expectedError = {
+            statusCode: 400,
+            message: 'The body provided was undefined',
+            name: 'bad request'
+          }
+
+          return trvRequestHandler.internal._createTrv(trvStorage, undefined)
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the trv is not an object', () => {
+        it('does not call the createTrv method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._createTrv(trvStorage, 'bad')
+            .catch(() => {
+              expect(createTrvSpy).not.toHaveBeenCalled()
+            })
+        })
+
+        it('returns a rejected promise with the error in the body', () => {
+          expect.assertions(1)
+          let expectedError = {
+            statusCode: 400,
+            message: 'The body provided was not an object. It was of the type string',
+            name: 'bad request'
+          }
+
+          return trvRequestHandler.internal._createTrv(trvStorage, 'bad')
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the trv object is valid', () => {
+        describe('when the json validator succeeds', () => {
+
+        })
+
+        describe('when the json validator fails', () => {
+          beforeEach(() => {
+
+          })
+
+          it('does not call the createTrv method', () => {
+            expect.assertions(1)
+            return trvRequestHandler.internal._createTrv(trvStorage, 'bad')
+              .catch(() => {
+                expect(createTrvSpy).not.toHaveBeenCalled()
+              })
+          })
+
+          it('returns a rejected promise with the error in the body', () => {
+            expect.assertions(1)
+            let expectedError = {
+              statusCode: 400,
+              message: 'The body provided was not an object. It was of the type string',
+              name: 'bad request'
+            }
+
+            return trvRequestHandler.internal._createTrv(trvStorage, 'bad')
+              .catch(error => {
+                expect(error).toEqual(expectedError)
+              })
+          })
+        })
+      })
+    })
+
+    describe('_getAllTrvs', () => {
+      let trvStorage
+      let getAllTrvsSpy
+
+      beforeEach(() => {
+        trvStorage = {
+          getAllTrvs: () => {}
+        }
+        getAllTrvsSpy = jest.spyOn(trvStorage, 'getAllTrvs')
+      })
+
+      afterEach(() => {
+        getAllTrvsSpy.mockReset()
+      })
+
+      afterAll(() => {
+        getAllTrvsSpy.mockRestore()
+      })
+
+      it('calls the getAllTrvs method', () => {
+        getAllTrvsSpy.mockReturnValue(Promise.resolve())
+
+        return trvRequestHandler.internal._getAllTrvs(trvStorage)
+          .then(() => {
+            expect(getAllTrvsSpy).toHaveBeenCalledTimes(1)
+          })
+      })
+
+      describe('when the getAllTrvs method succeeds', () => {
+        it('returns a resolved promise with an array of trvs', () => {
+          getAllTrvsSpy.mockReturnValue(Promise.resolve([{}, {}, {}]))
+
+          return trvRequestHandler.internal._getAllTrvs(trvStorage)
+            .then(trvs => {
+              expect(trvs).toEqual([{}, {}, {}])
+            })
+        })
+      })
+
+      describe('when the getAllTrvs method fails', () => {
+        it('returns a rejected promise with an error in the body', () => {
+          expect.assertions(1)
+          getAllTrvsSpy.mockReturnValue(Promise.reject(new Error('Bang!')))
+
+          return trvRequestHandler.internal._getAllTrvs(trvStorage)
+            .catch(error => {
+              expect(error.message).toEqual('Bang!')
+            })
+        })
+      })
+    })
+
+    describe('_getTrvByID', () => {
+      let trvStorage
+      let getTrvByIdSpy
+
+      beforeEach(() => {
+        trvStorage = {
+          getTrvById: () => {}
+        }
+        getTrvByIdSpy = jest.spyOn(trvStorage, 'getTrvById')
+      })
+
+      afterEach(() => {
+        getTrvByIdSpy.mockReset()
+      })
+
+      afterAll(() => {
+        getTrvByIdSpy.mockRestore()
+      })
+
+      describe('when the trvId is undefined', () => {
+        it('does not call the getTrvById database method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._getTrvByID(trvStorage, undefined)
+            .catch(() => {
+              expect(getTrvByIdSpy).toHaveBeenCalledTimes(0)
+            })
+        })
+
+        it('returns a rejected promise with an error', () => {
+          const expectedError = {
+            statusCode: 400,
+            message: 'The id provided was undefined',
+            name: 'bad request'
+          }
+          expect.assertions(1)
+          return trvRequestHandler.internal._getTrvByID(trvStorage, undefined)
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the id is not a string', () => {
+        it('does not call the getTrvById database method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._getTrvByID(trvStorage, 1234)
+            .catch(() => {
+              expect(getTrvByIdSpy).toHaveBeenCalledTimes(0)
+            })
+        })
+
+        it('returns a rejected promise with an error', () => {
+          const expectedError = {
+            statusCode: 400,
+            message: 'The id provided was not in string format',
+            name: 'bad request'
+          }
+          expect.assertions(1)
+          return trvRequestHandler.internal._getTrvByID(trvStorage, 1234)
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the id does not match the regex', () => {
+        it('does not call the getTrvById database method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._getTrvByID(trvStorage, '1234')
+            .catch(() => {
+              expect(getTrvByIdSpy).toHaveBeenCalledTimes(0)
+            })
+        })
+
+        it('returns a rejected promise with an error', () => {
+          const expectedError = {
+            statusCode: 400,
+            message: 'Id did not match the following regex: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/',
+            name: 'bad request'
+          }
+          expect.assertions(1)
+          return trvRequestHandler.internal._getTrvByID(trvStorage, '1234')
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('the id is valid', () => {
+        let regexSpy
+
+        beforeEach(() => {
+          regexSpy = jest.spyOn(RegExp.prototype, 'test').mockReturnValue(true)
+        })
+
+        afterEach(() => {
+          regexSpy.mockRestore()
+        })
+
+        it('calls the getTrvById database method', () => {
+          getTrvByIdSpy.mockReturnValue(Promise.resolve())
+          return trvRequestHandler.internal._getTrvByID(trvStorage, '1234')
+            .then(() => {
+              expect(getTrvByIdSpy).toHaveBeenCalledTimes(1)
+            })
+        })
+
+        describe('when the getTrvById database method succeeds', () => {
+          const fakeTrvDoc = {
+            'id': '1234',
+            'currentTemperature': 25,
+            'targetTemperature': 18,
+            'ambientTemperature': 18,
+            'name': 'new test',
+            'serialId': 'OTRV-D0L2OO49TZ',
+            'active': false,
+            'activeSchedules': [],
+            'metadata': {}
+          }
+
+          it('returns a resolved promise with the trv document', () => {
+            getTrvByIdSpy.mockReturnValue(Promise.resolve(fakeTrvDoc))
+            return trvRequestHandler.internal._getTrvByID(trvStorage, '1234')
+              .then(trv => {
+                expect(trv).toEqual(fakeTrvDoc)
+              })
+          })
+        })
+
+        describe('when the getTrvById database method fails', () => {
+          it('returns a rejected promise with the error in the body', () => {
+            expect.assertions(1)
+            getTrvByIdSpy.mockReturnValue(Promise.reject(new Error('Bang!')))
+            return trvRequestHandler.internal._getTrvByID(trvStorage, '1234')
+              .catch(error => {
+                expect(error.message).toEqual('Bang!')
+              })
+          })
+        })
+      })
+    })
+
+    describe('_updateTrv', () => {
+
+    })
+
+    describe('_deleteTrv', () => {
+      let trvStorage
+      let deleteTrvSpy
+
+      beforeEach(() => {
+        trvStorage = {
+          deleteTrv: () => {}
+        }
+        deleteTrvSpy = jest.spyOn(trvStorage, 'deleteTrv')
+      })
+
+      afterEach(() => {
+        deleteTrvSpy.mockReset()
+      })
+
+      afterAll(() => {
+        deleteTrvSpy.mockRestore()
+      })
+
+      describe('when the trvId is undefined', () => {
+        it('does not call the deleteTrv database method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._deleteTrv(trvStorage, undefined)
+            .catch(() => {
+              expect(deleteTrvSpy).toHaveBeenCalledTimes(0)
+            })
+        })
+
+        it('returns a rejected promise with an error', () => {
+          const expectedError = {
+            statusCode: 400,
+            message: 'The id provided was undefined',
+            name: 'bad request'
+          }
+          expect.assertions(1)
+          return trvRequestHandler.internal._deleteTrv(trvStorage, undefined)
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the id is not a string', () => {
+        it('does not call the deleteTrv database method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._deleteTrv(trvStorage, 1234)
+            .catch(() => {
+              expect(deleteTrvSpy).toHaveBeenCalledTimes(0)
+            })
+        })
+
+        it('returns a rejected promise with an error', () => {
+          const expectedError = {
+            statusCode: 400,
+            message: 'The id provided was not in string format',
+            name: 'bad request'
+          }
+          expect.assertions(1)
+          return trvRequestHandler.internal._deleteTrv(trvStorage, 1234)
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('when the id does not match the regex', () => {
+        it('does not call the deleteTrv database method', () => {
+          expect.assertions(1)
+          return trvRequestHandler.internal._deleteTrv(trvStorage, '1234')
+            .catch(() => {
+              expect(deleteTrvSpy).toHaveBeenCalledTimes(0)
+            })
+        })
+
+        it('returns a rejected promise with an error', () => {
+          const expectedError = {
+            statusCode: 400,
+            message: 'Id did not match the following regex: /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/',
+            name: 'bad request'
+          }
+          expect.assertions(1)
+          return trvRequestHandler.internal._deleteTrv(trvStorage, '1234')
+            .catch(error => {
+              expect(error).toEqual(expectedError)
+            })
+        })
+      })
+
+      describe('the id is valid', () => {
+        let regexSpy
+
+        beforeEach(() => {
+          regexSpy = jest.spyOn(RegExp.prototype, 'test').mockReturnValue(true)
+        })
+
+        afterEach(() => {
+          regexSpy.mockRestore()
+        })
+
+        it('calls the deleteTrv database method', () => {
+          deleteTrvSpy.mockReturnValue(Promise.resolve())
+          return trvRequestHandler.internal._deleteTrv(trvStorage, '1234')
+            .then(() => {
+              expect(deleteTrvSpy).toHaveBeenCalledTimes(1)
+            })
+        })
+
+        describe('when the deleteTrv database method succeeds', () => {
+          it('returns a resolved promise', () => {
+            deleteTrvSpy.mockReturnValue(Promise.resolve())
+            return trvRequestHandler.internal._deleteTrv(trvStorage, '1234')
+          })
+        })
+
+        describe('when the deleteTrv database method fails', () => {
+          it('returns a rejected promise with the error in the body', () => {
+            expect.assertions(1)
+            deleteTrvSpy.mockReturnValue(Promise.reject(new Error('Bang!')))
+            return trvRequestHandler.internal._deleteTrv(trvStorage, '1234')
+              .catch(error => {
+                expect(error.message).toEqual('Bang!')
+              })
+          })
+        })
+      })
+    })
   })
 })
