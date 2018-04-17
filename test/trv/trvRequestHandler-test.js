@@ -319,7 +319,7 @@ describe('trvRequestHandler', () => {
     })
 
     describe('when the _getAllTrvs internal function succeeds', () => {
-      const fakeTrvDoc = {
+      const fakeTrvDocs = [{
         'id': '2d47b4f6-70e2-4255-8cb4-fb1cb844a357',
         'currentTemperature': 25,
         'targetTemperature': 18,
@@ -329,10 +329,20 @@ describe('trvRequestHandler', () => {
         'active': false,
         'activeSchedules': [],
         'metadata': {}
-      }
+      }, {
+        'id': '2d37b4f6-70e2-4255-4cb4-fb1cb844a357',
+        'currentTemperature': 25,
+        'targetTemperature': 18,
+        'ambientTemperature': 18,
+        'name': 'new test',
+        'serialId': 'OTRV-D0L2OO49TZ',
+        'active': false,
+        'activeSchedules': [],
+        'metadata': {}
+      }]
 
       beforeEach(() => {
-        getAllTrvsSpy.mockReturnValue(Promise.resolve([fakeTrvDoc]))
+        getAllTrvsSpy.mockReturnValue(Promise.resolve(fakeTrvDocs))
       })
 
       it('returns 200', (done) => {
@@ -351,7 +361,7 @@ describe('trvRequestHandler', () => {
       it('returns the array', (done) => {
         res.on('end', () => {
           try {
-            expect(res._getData()).toEqual([fakeTrvDoc])
+            expect(res._getData()).toEqual(fakeTrvDocs)
             done()
           } catch (e) {
             done(e)
