@@ -15,6 +15,7 @@ router.get('/trv/:id/isActive', trvRequestHandler.getTrvActivityRequestHandler)
 router.get('/trv/:id/temperature', trvRequestHandler.getTrvTemperatureRequestHandler)
 router.put('/trv/:id/temperature', trvRequestHandler.updateTrvTargetTemperatureRequestHandler)
 router.get('/trv/:id/info', trvRequestHandler.getTrvInfoRequestHandler)
+router.patch('/trv/:id/activeSchedules', trvRequestHandler.patchActiveSchedulesRequestHandler)
 
 // schedule request handlers
 router.post('/schedule', scheduleRequestHandler.createScheduleRequestHandler)
