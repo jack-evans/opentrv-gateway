@@ -2,11 +2,13 @@
 
 const bodyParser = require('body-parser')
 const express = require('express')
+const verifyUserPass = require('./lib/middleware/verifyUserPass')
 
 const app = express()
 
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
+app.use(verifyUserPass)
 
 const TrvStorage = require('./lib/trv/trvStorage')
 const trvStorage = new TrvStorage()
