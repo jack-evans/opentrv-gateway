@@ -274,10 +274,165 @@ describe('trvStorage.js', () => {
   })
 
   describe('trvStorage updateTrv method', () => {
+    let writeFileSpy
+    let readFileSpy
+    let trvStorage
+    const trv = {
+      'id': '3e105d3c-8671-4040-b4ed-0e8a40da0b02',
+      'currentTemperature': 11.8,
+      'ambientTemperature': 18,
+      'name': 'Device 5',
+      'serialId': 'OTRV-NG5504ORUR',
+      'active': false,
+      'activeSchedules': [],
+      'metadata': {}
+    }
 
+    beforeEach(() => {
+      writeFileSpy = jest.spyOn(jsonFile, 'writeFile')
+      readFileSpy = jest.spyOn(jsonFile, 'readFile')
+      fsExistsSyncSpy.mockReturnValue(true)
+      trvStorage = new TrvStorage()
+    })
+
+    afterEach(() => {
+      writeFileSpy.mockReset()
+      readFileSpy.mockReset()
+    })
+
+    afterAll(() => {
+      writeFileSpy.mockRestore()
+      readFileSpy.mockRestore()
+    })
+
+    it('calls the jsonfile writeFile function', () => {
+      writeFileSpy.mockImplementation((path, object, options, cb) => {
+        cb()
+      })
+      readFileSpy.mockImplementation((path, cb) => {
+        cb(null, {content: 'some data'})
+      })
+
+      return trvStorage.updateTrv(trv)
+        .then(() => {
+          expect(writeFileSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('when the jsonfile writeFile function succeeds', () => {
+      it('calls the jsonfile readFile function', () => {
+        writeFileSpy.mockImplementation((path, object, options, cb) => {
+          cb()
+        })
+        readFileSpy.mockImplementation((path, cb) => {
+          cb(null, {content: 'some data'})
+        })
+
+        return trvStorage.updateTrv(trv)
+          .then(() => {
+            expect(readFileSpy).toHaveBeenCalledTimes(1)
+          })
+      })
+
+      describe('when the jsonfile readFile function succeeds', () => {
+        it('returns a resolved promise with the trv the user wrote', () => {
+          writeFileSpy.mockImplementation((path, object, options, cb) => {
+            cb()
+          })
+          readFileSpy.mockImplementation((path, cb) => {
+            cb(null, trv)
+          })
+
+          return trvStorage.updateTrv(trv)
+            .then(result => {
+              expect(result).toEqual(trv)
+            })
+        })
+      })
+
+      describe('when the jsonfile readFile function fails', () => {
+        it('returns a rejected promise with the error in the body', () => {
+          expect.assertions(1)
+          writeFileSpy.mockImplementation((path, object, options, cb) => {
+            cb()
+          })
+          readFileSpy.mockImplementation((path, cb) => {
+            cb(new Error('Bang!'), null)
+          })
+
+          return trvStorage.updateTrv(trv)
+            .catch(error => {
+              expect(error.message).toEqual('Bang!')
+            })
+        })
+      })
+    })
+
+    describe('when the jsonfile writeFile function fails', () => {
+      it('returns a rejected promise with the error in the body', () => {
+        expect.assertions(1)
+        writeFileSpy.mockImplementation((path, object, options, cb) => {
+          cb(new Error('Bang!'))
+        })
+
+        return trvStorage.updateTrv(trv)
+          .catch(error => {
+            expect(error.message).toEqual('Bang!')
+          })
+      })
+    })
   })
 
   describe('trvStorage deleteTrv method', () => {
+    let fsUnlinkSpy
+    let trvStorage
 
+    beforeEach(() => {
+      fsUnlinkSpy = jest.spyOn(fs, 'unlink')
+      trvStorage = new TrvStorage()
+    })
+
+    afterEach(() => {
+      fsUnlinkSpy.mockReset()
+    })
+
+    afterAll(() => {
+      fsUnlinkSpy.mockRestore()
+    })
+
+    it.skip('calls the fs unlink function', () => {
+      fsUnlinkSpy.mockImplementation((path, cb) => {
+        cb()
+      })
+
+      return trvStorage.deleteTrv('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+        .then(() => {
+          expect(fsUnlinkSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe.skip('when the fs unlink function succeeds', () => {
+      it('returns a resolved promise', () => {
+        fsUnlinkSpy.mockImplementation((path, cb) => {
+          cb()
+        })
+
+        return trvStorage.deleteTrv('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+      })
+    })
+
+    describe.skip('when the fs unlink function fails', () => {
+      it('returns a rejected promise with the error in the body', () => {
+        expect.assertions(1)
+        fsUnlinkSpy.mockImplementation((path, cb) => {
+          cb(new Error('Bang!'))
+        })
+
+        return trvStorage.deleteTrv('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+          .catch(error => {
+            expect(error.message).toEqual('Bang!')
+          })
+      })
+    })
   })
 })
