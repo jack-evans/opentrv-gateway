@@ -47,7 +47,7 @@ describe('trvStorage.js', () => {
       })
 
       it('calls the mkdir function', () => {
-        new TrvStorage()
+        TrvStorage()
         expect(fsMkdirSpy).toHaveBeenCalledTimes(1)
       })
 
@@ -60,7 +60,7 @@ describe('trvStorage.js', () => {
 
         it('does not throw an error', () => {
           expect(() => {
-            new TrvStorage()
+            TrvStorage()
           }).not.toThrow()
         })
       })
@@ -74,7 +74,7 @@ describe('trvStorage.js', () => {
 
         it('throws an error', () => {
           expect(() => {
-            new TrvStorage()
+            TrvStorage()
           }).toThrow()
         })
       })
@@ -86,7 +86,7 @@ describe('trvStorage.js', () => {
       })
 
       it('does not call the mkdir function', () => {
-        new TrvStorage()
+        TrvStorage()
         expect(fsMkdirSpy).not.toHaveBeenCalled()
       })
     })
@@ -94,6 +94,7 @@ describe('trvStorage.js', () => {
 
   describe('trvStorage createTrv method', () => {
     let writeFileSpy
+    let readFileSpy
     let trvStorage
     const trv = {
       'id': '3e105d3c-8671-4040-b4ed-0e8a40da0b02',
@@ -108,24 +109,164 @@ describe('trvStorage.js', () => {
 
     beforeEach(() => {
       writeFileSpy = jest.spyOn(jsonFile, 'writeFile')
+      readFileSpy = jest.spyOn(jsonFile, 'readFile')
+      fsExistsSyncSpy.mockReturnValue(true)
       trvStorage = new TrvStorage()
     })
 
     afterEach(() => {
       writeFileSpy.mockReset()
+      readFileSpy.mockReset()
     })
 
     afterAll(() => {
       writeFileSpy.mockRestore()
+      readFileSpy.mockRestore()
     })
 
     it('calls the jsonfile writeFile function', () => {
-      
+      writeFileSpy.mockImplementation((path, object, options, cb) => {
+        cb()
+      })
+      readFileSpy.mockImplementation((path, cb) => {
+        cb(null, {content: 'some data'})
+      })
+
+      return trvStorage.createTrv(trv)
+        .then(() => {
+          expect(writeFileSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('when the jsonfile writeFile function succeeds', () => {
+      it('calls the jsonfile readFile function', () => {
+        writeFileSpy.mockImplementation((path, object, options, cb) => {
+          cb()
+        })
+        readFileSpy.mockImplementation((path, cb) => {
+          cb(null, {content: 'some data'})
+        })
+
+        return trvStorage.createTrv(trv)
+          .then(() => {
+            expect(readFileSpy).toHaveBeenCalledTimes(1)
+          })
+      })
+
+      describe('when the jsonfile readFile function succeeds', () => {
+        it('returns a resolved promise with the trv the user wrote', () => {
+          writeFileSpy.mockImplementation((path, object, options, cb) => {
+            cb()
+          })
+          readFileSpy.mockImplementation((path, cb) => {
+            cb(null, trv)
+          })
+
+          return trvStorage.createTrv(trv)
+            .then(result => {
+              expect(result).toEqual(trv)
+            })
+        })
+      })
+
+      describe('when the jsonfile readFile function fails', () => {
+        it('returns a rejected promise with the error in the body', () => {
+          expect.assertions(1)
+          writeFileSpy.mockImplementation((path, object, options, cb) => {
+            cb()
+          })
+          readFileSpy.mockImplementation((path, cb) => {
+            cb(new Error('Bang!'), null)
+          })
+
+          return trvStorage.createTrv(trv)
+            .catch(error => {
+              expect(error.message).toEqual('Bang!')
+            })
+        })
+      })
+    })
+
+    describe('when the jsonfile writeFile function fails', () => {
+      it('returns a rejected promise with the error in the body', () => {
+        expect.assertions(1)
+        writeFileSpy.mockImplementation((path, object, options, cb) => {
+          cb(new Error('Bang!'))
+        })
+
+        return trvStorage.createTrv(trv)
+          .catch(error => {
+            expect(error.message).toEqual('Bang!')
+          })
+      })
     })
   })
 
   describe('trvStorage getTrvById method', () => {
+    let readFileSpy
+    let trvStorage
+    const trv = {
+      'id': '3e105d3c-8671-4040-b4ed-0e8a40da0b02',
+      'currentTemperature': 11.8,
+      'ambientTemperature': 18,
+      'name': 'Device 5',
+      'serialId': 'OTRV-NG5504ORUR',
+      'active': false,
+      'activeSchedules': [],
+      'metadata': {}
+    }
 
+    beforeEach(() => {
+      readFileSpy = jest.spyOn(jsonFile, 'readFile')
+      fsExistsSyncSpy.mockReturnValue(true)
+      trvStorage = new TrvStorage()
+    })
+
+    afterEach(() => {
+      readFileSpy.mockReset()
+    })
+
+    afterAll(() => {
+      readFileSpy.mockRestore()
+    })
+
+    it('calls the jsonfile readFile function', () => {
+      readFileSpy.mockImplementation((path, cb) => {
+        cb(null, {content: 'some data'})
+      })
+
+      return trvStorage.getTrvById('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+        .then(() => {
+          expect(readFileSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('when the jsonfile readFile function succeeds', () => {
+      it('returns a resolved promise with the json in the body', () => {
+        readFileSpy.mockImplementation((path, cb) => {
+          cb(null, trv)
+        })
+
+        return trvStorage.getTrvById('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+          .then(result => {
+            expect(result).toEqual(trv)
+          })
+      })
+    })
+
+    describe('when the jsonfile readFile function fails', () => {
+      it('returns a rejected promise with the error in the body', () => {
+        expect.assertions(1)
+        readFileSpy.mockImplementation((path, cb) => {
+          cb(new Error('Bang!'), null)
+        })
+
+        return trvStorage.getTrvById('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+          .catch(error => {
+            expect(error.message).toEqual('Bang!')
+          })
+      })
+    })
   })
 
   describe('trvStorage getAllTrvs method', () => {
