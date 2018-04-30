@@ -389,6 +389,7 @@ describe('trvStorage.js', () => {
 
     beforeEach(() => {
       fsUnlinkSpy = jest.spyOn(fs, 'unlink')
+      fsExistsSyncSpy.mockReturnValue(true)
       trvStorage = new TrvStorage()
     })
 
@@ -400,7 +401,7 @@ describe('trvStorage.js', () => {
       fsUnlinkSpy.mockRestore()
     })
 
-    it.skip('calls the fs unlink function', () => {
+    it('calls the fs unlink function', () => {
       fsUnlinkSpy.mockImplementation((path, cb) => {
         cb()
       })
@@ -411,7 +412,7 @@ describe('trvStorage.js', () => {
         })
     })
 
-    describe.skip('when the fs unlink function succeeds', () => {
+    describe('when the fs unlink function succeeds', () => {
       it('returns a resolved promise', () => {
         fsUnlinkSpy.mockImplementation((path, cb) => {
           cb()
@@ -421,7 +422,7 @@ describe('trvStorage.js', () => {
       })
     })
 
-    describe.skip('when the fs unlink function fails', () => {
+    describe('when the fs unlink function fails', () => {
       it('returns a rejected promise with the error in the body', () => {
         expect.assertions(1)
         fsUnlinkSpy.mockImplementation((path, cb) => {
