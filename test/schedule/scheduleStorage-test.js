@@ -402,6 +402,56 @@ describe('scheduleStorage.js', () => {
   })
 
   describe('scheduleStorage deleteSchedule method', () => {
+    let fsUnlinkSpy
+    let scheduleStorage
 
+    beforeEach(() => {
+      fsUnlinkSpy = jest.spyOn(fs, 'unlink')
+      fsExistsSyncSpy.mockReturnValue(true)
+      scheduleStorage = new ScheduleStorage()
+    })
+
+    afterEach(() => {
+      fsUnlinkSpy.mockReset()
+    })
+
+    afterAll(() => {
+      fsUnlinkSpy.mockRestore()
+    })
+
+    it('calls the fs unlink function', () => {
+      fsUnlinkSpy.mockImplementation((path, cb) => {
+        cb()
+      })
+
+      return scheduleStorage.deleteSchedule('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+        .then(() => {
+          expect(fsUnlinkSpy).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('when the fs unlink function succeeds', () => {
+      it('returns a resolved promise', () => {
+        fsUnlinkSpy.mockImplementation((path, cb) => {
+          cb()
+        })
+
+        return scheduleStorage.deleteSchedule('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+      })
+    })
+
+    describe('when the fs unlink function fails', () => {
+      it('returns a rejected promise with the error in the body', () => {
+        expect.assertions(1)
+        fsUnlinkSpy.mockImplementation((path, cb) => {
+          cb(new Error('Bang!'))
+        })
+
+        return scheduleStorage.deleteSchedule('3e105d3c-8671-4040-b4ed-0e8a40da0b02')
+          .catch(error => {
+            expect(error.message).toEqual('Bang!')
+          })
+      })
+    })
   })
 })
